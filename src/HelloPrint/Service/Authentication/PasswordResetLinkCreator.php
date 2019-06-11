@@ -4,5 +4,5 @@ namespace App\HelloPrint\Service\Authentication;
 
 interface PasswordResetLinkCreator
 {
-    public function createByEmail(string $email, string $uuid): string;
+    public function createByEmail(string $email, string $uuid): void;
 }
