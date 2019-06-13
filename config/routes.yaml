@@ -1,3 +1,3 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path: /reset-password
+    controller: App\Framework\Controller\RequestResetPasswordController
