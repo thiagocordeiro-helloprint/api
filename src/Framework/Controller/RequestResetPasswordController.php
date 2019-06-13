@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Framework\Controller;
 
 class RequestResetPasswordController
 {
@@ -10,6 +10,7 @@ class RequestResetPasswordController
 
     public function __invoke()
     {
+        dd('hello');
         // TODO: Implement __invoke() method.
     }
 }
