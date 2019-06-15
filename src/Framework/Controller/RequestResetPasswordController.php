@@ -19,6 +19,7 @@ class RequestResetPasswordController
 
     public function __invoke(Request $request): Response
     {
+        dd($request->getContent());
         $body = json_decode($request->getContent(), true);
         $email = $body['email'] ?? '';
 
