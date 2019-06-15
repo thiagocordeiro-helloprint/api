@@ -28,7 +28,11 @@ class GuzzleApiClient implements PasswordReseter, Authenticator
     public function resetPassword(string $email): void
     {
         try {
-            $this->guzzle->post("api/users/{$email}/password-reset");
+            $this->guzzle->post("api/users/password-reset", [
+                RequestOptions::JSON => [
+                    'email' => $email,
+                ],
+            ]);
         } catch (ClientException $e) {
             $this->throwRequestError($e);
         }
