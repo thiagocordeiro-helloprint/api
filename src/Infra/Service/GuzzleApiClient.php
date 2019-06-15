@@ -3,7 +3,9 @@
 namespace App\Infra\Service;
 
 use App\HelloPrint\Auth\Authenticator;
+use App\HelloPrint\Auth\Exception\PasswordMismatchException;
 use App\HelloPrint\Auth\Exception\ServiceUnavailableException;
+use App\HelloPrint\Auth\Exception\UserInactiveException;
 use App\HelloPrint\Auth\Exception\UserNotFoundException;
 use App\HelloPrint\Auth\PasswordReseter;
 use App\HelloPrint\Auth\User;
@@ -41,6 +43,8 @@ class GuzzleApiClient implements PasswordReseter, Authenticator
     /**
      * @throws ServiceUnavailableException
      * @throws UserNotFoundException
+     * @throws PasswordMismatchException
+     * @throws UserInactiveException
      */
     public function authenticate(string $email, string $password): ?User
     {
@@ -68,11 +72,21 @@ class GuzzleApiClient implements PasswordReseter, Authenticator
     /**
      * @throws ServiceUnavailableException
      * @throws UserNotFoundException
+     * @throws PasswordMismatchException
+     * @throws UserInactiveException
      */
     private function throwRequestError(ClientException $e): void
     {
         if ($e->getCode() === Response::HTTP_NOT_FOUND) {
             throw new UserNotFoundException();
+        }
+
+        if ($e->getCode() === Response::HTTP_UNAUTHORIZED) {
+            throw new PasswordMismatchException();
+        }
+
+        if ($e->getCode() === Response::HTTP_FORBIDDEN) {
+            throw new UserInactiveException();
         }
 
         throw new ServiceUnavailableException($e);

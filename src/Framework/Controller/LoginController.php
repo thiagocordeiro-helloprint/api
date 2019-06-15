@@ -2,7 +2,9 @@
 
 namespace App\Framework\Controller;
 
+use App\HelloPrint\Auth\Exception\PasswordMismatchException;
 use App\HelloPrint\Auth\Exception\ServiceUnavailableException;
+use App\HelloPrint\Auth\Exception\UserInactiveException;
 use App\HelloPrint\Auth\Exception\UserNotFoundException;
 use App\HelloPrint\Auth\LoginService;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,6 +33,10 @@ class LoginController
 
         try {
             $user = $this->service->doLogin($email, $password);
+        } catch (PasswordMismatchException $e) {
+            throw new HttpException(Response::HTTP_UNAUTHORIZED);
+        } catch (UserInactiveException $e) {
+            throw new HttpException(Response::HTTP_FORBIDDEN);
         } catch (UserNotFoundException $e) {
             throw new HttpException(Response::HTTP_NOT_FOUND);
         } catch (ServiceUnavailableException $e) {

@@ -2,7 +2,9 @@
 
 namespace App\HelloPrint\Auth;
 
+use App\HelloPrint\Auth\Exception\PasswordMismatchException;
 use App\HelloPrint\Auth\Exception\ServiceUnavailableException;
+use App\HelloPrint\Auth\Exception\UserInactiveException;
 use App\HelloPrint\Auth\Exception\UserNotFoundException;
 
 class LoginService
@@ -17,6 +19,8 @@ class LoginService
     /**
      * @throws ServiceUnavailableException
      * @throws UserNotFoundException
+     * @throws PasswordMismatchException
+     * @throws UserInactiveException
      */
     public function doLogin(string $email, string $password): User
     {
