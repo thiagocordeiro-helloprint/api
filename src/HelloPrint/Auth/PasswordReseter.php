@@ -4,7 +4,7 @@ namespace App\HelloPrint\Auth;
 
 use App\HelloPrint\Auth\Exception\ServiceUnavailableException;
 
-interface AuthApi
+interface PasswordReseter
 {
     /**
      * @throws ServiceUnavailableException

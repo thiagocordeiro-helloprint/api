@@ -1,3 +1,11 @@
 index:
     path: /reset-password
+    methods:
+        - POST
     controller: App\Framework\Controller\RequestResetPasswordController
+
+login:
+    path: /login
+    methods:
+        - POST
+    controller: App\Framework\Controller\LoginController

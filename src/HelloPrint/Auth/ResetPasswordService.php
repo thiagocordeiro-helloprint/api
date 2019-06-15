@@ -3,17 +3,19 @@
 namespace App\HelloPrint\Auth;
 
 use App\HelloPrint\Auth\Exception\ServiceUnavailableException;
+use App\HelloPrint\Auth\Exception\UserNotFoundException;
 
 class ResetPasswordService
 {
-    private AuthApi $apiClient;
+    private PasswordReseter $apiClient;
 
-    public function __construct(AuthApi $apiClient)
+    public function __construct(PasswordReseter $apiClient)
     {
         $this->apiClient = $apiClient;
     }
 
     /**
+     * @throws UserNotFoundException
      * @throws ServiceUnavailableException
      */
     public function requestPasswordReset(string $email): void

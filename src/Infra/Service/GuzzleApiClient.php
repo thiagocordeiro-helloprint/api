@@ -2,12 +2,17 @@
 
 namespace App\Infra\Service;
 
-use App\HelloPrint\Auth\AuthApi;
+use App\HelloPrint\Auth\Authenticator;
 use App\HelloPrint\Auth\Exception\ServiceUnavailableException;
+use App\HelloPrint\Auth\Exception\UserNotFoundException;
+use App\HelloPrint\Auth\PasswordReseter;
+use App\HelloPrint\Auth\User;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\RequestOptions;
+use Symfony\Component\HttpFoundation\Response;
 
-class GuzzleApiClient implements AuthApi
+class GuzzleApiClient implements PasswordReseter, Authenticator
 {
     private GuzzleClient $guzzle;
 
@@ -16,12 +21,56 @@ class GuzzleApiClient implements AuthApi
         $this->guzzle = $guzzle;
     }
 
+    /**
+     * @throws ServiceUnavailableException
+     * @throws UserNotFoundException
+     */
     public function resetPassword(string $email): void
     {
         try {
             $this->guzzle->post("api/users/{$email}/password-reset");
         } catch (ClientException $e) {
-            throw new ServiceUnavailableException($e);
+            $this->throwRequestError($e);
         }
+    }
+
+    /**
+     * @throws ServiceUnavailableException
+     * @throws UserNotFoundException
+     */
+    public function authenticate(string $email, string $password): ?User
+    {
+        try {
+            $response = $this->guzzle->post('api/users/login', [
+                RequestOptions::JSON => [
+                    'email' => $email,
+                    'password' => $password,
+                ],
+            ]);
+
+            $data = json_decode((string) $response->getBody(), true);
+
+            return new User(
+                (string) $data['username'] ?? '',
+                (string) $data['email'] ?? ''
+            );
+        } catch (ClientException $e) {
+            $this->throwRequestError($e);
+        }
+
+        return null;
+    }
+
+    /**
+     * @throws ServiceUnavailableException
+     * @throws UserNotFoundException
+     */
+    private function throwRequestError(ClientException $e): void
+    {
+        if ($e->getCode() === Response::HTTP_NOT_FOUND) {
+            throw new UserNotFoundException();
+        }
+
+        throw new ServiceUnavailableException($e);
     }
 }
